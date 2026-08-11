@@ -333,6 +333,17 @@ function render(){
   document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 }
 render();
+
+// 방문 집계 (익명 · 세션당 1회 · 개인 신원 없음)
+(function(){try{
+  if(sessionStorage.getItem("yc_v")) return;
+  sessionStorage.setItem("yc_v","1");
+  var sb=CONFIG.supabase;
+  fetch(sb.url+"/rest/v1/yuchan_visit",{method:"POST",
+    headers:{apikey:sb.key,Authorization:"Bearer "+sb.key,"Content-Type":"application/json",Prefer:"return=minimal"},
+    body:JSON.stringify({referrer:document.referrer||null,user_agent:(navigator.userAgent||"").slice(0,300),path:location.pathname})
+  }).catch(function(){});
+}catch(e){}})();
 </script>
 </body>
 </html>

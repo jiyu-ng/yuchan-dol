@@ -8,7 +8,7 @@ const path = require('path');
   const url = 'file://' + path.resolve(__dirname, 'index.html');
   await page.goto(url, { waitUntil:'networkidle' });
   // 캡처용: 표지 vh가 전체높이 뷰포트에서 왜곡되지 않게 고정
-  await page.addStyleTag({ content:'.cover{min-height:660px !important}' });
+  await page.addStyleTag({ content:'.cover{min-height:780px !important}' });
   await page.evaluate(async()=>{await new Promise(res=>{let y=0;const h=document.body.scrollHeight;
     const t=setInterval(()=>{y+=300;window.scrollTo(0,y);if(y>=h){clearInterval(t);res();}},50);});});
   await page.waitForTimeout(500);

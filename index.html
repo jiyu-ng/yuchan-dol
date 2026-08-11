@@ -53,8 +53,9 @@
   .name-en{font-size:12px;letter-spacing:.55em;color:#E6C97A;margin-bottom:20px}
   .sub{font-size:16px;color:#F1E8D5;letter-spacing:.02em;text-shadow:0 1px 12px rgba(0,0,0,.35)}
   .cover .date{margin-top:20px;font-family:'Gowun Batang',serif;font-size:16px;color:#EAD9B8;letter-spacing:.04em}
-  .dday{display:inline-block;margin-top:15px;padding:6px 18px;border:1px solid rgba(230,201,122,.7);
-    border-radius:2px;font-size:12px;color:#F4ECD9;letter-spacing:.08em}
+  .dday{position:absolute;left:50%;bottom:38px;transform:translateX(-50%);z-index:2;
+    padding:8px 22px;border:1px solid rgba(244,236,217,.55);border-radius:2px;font-size:12px;
+    color:#F4ECD9;letter-spacing:.08em;background:rgba(42,36,31,.3);white-space:nowrap}
   /* 낙관 도장 */
   .stamp{position:absolute;top:22px;right:24px;width:52px;height:52px;background:var(--dahong);
     border-radius:5px;color:#F4ECD9;font-family:'Nanum Myeongjo',serif;font-weight:700;
@@ -237,8 +238,8 @@ function render(){
         <div class="name-en">${CONFIG.babyNameEn}</div>
         <div class="sub myeong">첫 번째 생일에 초대합니다</div>
         <div class="date">${CONFIG.dateText}</div>
-        <div class="dday" id="dday"></div>
       </div>
+      <div class="dday" id="dday"></div>
     </section>
 
     <section class="greet">${plum()}

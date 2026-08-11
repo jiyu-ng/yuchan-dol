@@ -1,0 +1,4 @@
+node_modules/
+preview-*.png
+preview-full.png
+package-lock.json

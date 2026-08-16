@@ -62,8 +62,11 @@
   .name-en{font-size:12px;letter-spacing:.55em;color:#E6C97A;margin-bottom:20px}
   .sub{font-size:16px;color:#F1E8D5;letter-spacing:.02em;text-shadow:0 1px 12px rgba(0,0,0,.35)}
   .cover .date{margin-top:20px;font-family:'Gowun Batang',serif;font-size:16px;color:#EAD9B8;letter-spacing:.04em}
-  .dday{display:inline-block;margin-top:18px;padding:7px 20px;border:1px solid var(--gold);
-    border-radius:2px;font-size:12.5px;color:var(--hwang);letter-spacing:.06em;background:var(--card)}
+  .dday{display:inline-block;margin:6px 0 26px;padding:9px 24px;border:1.5px solid var(--gold);
+    border-radius:999px;font-size:13.5px;color:var(--hwang);letter-spacing:.05em;
+    background:linear-gradient(#FFFDF6,#FBF3E0);box-shadow:0 2px 10px rgba(180,140,70,.14);
+    font-family:'Nanum Myeongjo',serif;font-weight:700;animation:ddayBlink 2.6s ease-in-out infinite}
+  @keyframes ddayBlink{0%,100%{opacity:1}50%{opacity:.5}}
   /* 낙관 도장 */
   .stamp{position:absolute;top:22px;right:24px;width:52px;height:52px;background:var(--dahong);
     border-radius:5px;color:#F4ECD9;font-family:'Nanum Myeongjo',serif;font-weight:700;
@@ -143,6 +146,8 @@
   .lb-prev{left:12px}.lb-next{right:12px}
   .bgm-btn{position:fixed;right:16px;bottom:16px;z-index:150;width:44px;height:44px;border:none;border-radius:50%;
     background:rgba(42,36,31,.55);color:#fff;font-size:19px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.28);line-height:1}
+  @keyframes bgmPulse{0%,100%{box-shadow:0 3px 12px rgba(0,0,0,.28)}50%{box-shadow:0 0 0 9px rgba(200,150,90,.22),0 3px 12px rgba(0,0,0,.28)}}
+  .bgm-btn.pulse{animation:bgmPulse 1.6s ease-in-out infinite}
 
   /* ===== HEART ===== */
   .heart{text-align:center;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -177,8 +182,10 @@
   footer{text-align:center;padding:20px 30px 56px;background:linear-gradient(180deg,#F0E6CF,#EADDC4)}
   .f-eaves{transform:rotate(180deg);width:100%;display:block;margin-bottom:20px}
   .f-thanks{font-family:'Nanum Myeongjo',serif;font-weight:700;font-size:18px;color:var(--meok);margin-bottom:10px}
-  .rsvp-note{margin:14px auto 4px;max-width:320px;padding:13px 16px;background:var(--card);border:1px solid var(--line);
-    border-radius:12px;font-size:13px;line-height:1.7;color:var(--muted)}
+  .rsvp-note{margin:20px auto 4px;max-width:330px;padding:18px 20px;
+    background:linear-gradient(180deg,#F3E7CE,#EEDFC2);border:1px solid var(--gold);
+    border-radius:16px;font-size:13.5px;line-height:1.85;color:var(--meok);
+    font-family:'Gowun Batang',serif;box-shadow:0 4px 16px rgba(160,120,60,.15)}
   .f-small{font-size:12px;color:var(--meok2);letter-spacing:.04em}
   .ph{outline:1px dashed var(--dahong);outline-offset:2px}
 </style>
@@ -376,8 +383,11 @@ function render(){
     bgm.addEventListener("play",setBtn);bgm.addEventListener("pause",setBtn);bgm.volume=0.6;
     window.toggleBgm=function(ev){if(ev)ev.stopPropagation();if(bgm.paused){userPaused=false;bgm.play().catch(function(){});}else{userPaused=true;bgm.pause();}};
     bgm.play().catch(function(){});
-    var kick=function(){if(!userPaused&&bgm.paused)bgm.play().catch(function(){});document.removeEventListener("pointerdown",kick);document.removeEventListener("scroll",kick);};
-    document.addEventListener("pointerdown",kick,{passive:true});document.addEventListener("scroll",kick,{passive:true});
+    var evs=["pointerdown","click","keydown","touchstart","wheel"];
+    var kick=function(){if(!userPaused&&bgm.paused)bgm.play().catch(function(){});evs.forEach(function(ev){document.removeEventListener(ev,kick);});};
+    evs.forEach(function(ev){document.addEventListener(ev,kick,{passive:true});});
+    var btn=document.getElementById("bgmBtn");if(btn)btn.classList.add("pulse");
+    bgm.addEventListener("play",function(){var b=document.getElementById("bgmBtn");if(b)b.classList.remove("pulse");});
   })();
   var LB_SETS={
     growth:(CONFIG.growth||[]).map(function(g){return {src:g.s,cap:g.l+(g.d?" · "+g.d:"")};}),

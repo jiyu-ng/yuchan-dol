@@ -48,6 +48,7 @@
   .cover .scrim{position:absolute;inset:0;z-index:1;
     background:linear-gradient(180deg,rgba(42,36,31,.74) 0%,rgba(42,36,31,.4) 24%,rgba(42,36,31,.06) 50%,rgba(42,36,31,0) 70%,rgba(42,36,31,.28) 100%)}
   .cover-in{position:relative;z-index:2;padding:54px 30px 0}
+  .cover-foot{position:relative;z-index:2;margin-top:auto;padding:0 30px 52px}
   .name{font-family:'Nanum Myeongjo',serif;font-weight:800;font-size:58px;color:#FAF4E6;
     letter-spacing:.12em;line-height:1.05;margin-bottom:8px;text-shadow:0 2px 20px rgba(0,0,0,.38)}
   .name-en{font-size:12px;letter-spacing:.55em;color:#E6C97A;margin-bottom:20px}
@@ -235,6 +236,8 @@ function render(){
       <div class="cover-in">
         <div class="name">${CONFIG.babyName}</div>
         <div class="name-en">${CONFIG.babyNameEn}</div>
+      </div>
+      <div class="cover-foot">
         <div class="sub myeong">첫 번째 생일에 초대합니다</div>
         <div class="date">${CONFIG.dateText}</div>
       </div>

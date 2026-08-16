@@ -7,14 +7,14 @@
 <title>유찬이 첫 생일에 초대합니다</title>
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://uchanlee.netlify.app/" />
-<meta property="og:title" content="유찬이 첫 생일에 초대합니다 · 예담헌 한옥 돌잔치" />
-<meta property="og:description" content="2026년 9월 20일 일요일 · 예담헌 본점(초담)" />
+<meta property="og:title" content="유찬이 첫 생일에 초대합니다" />
+<meta property="og:description" content="유찬이의 첫 생일에 소중한 분들을 초대해요 🐣" />
 <meta property="og:image" content="https://uchanlee.netlify.app/assets/studio3.jpg" />
 <meta property="og:image:width" content="1024" />
 <meta property="og:image:height" content="1280" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="유찬이 첫 생일에 초대합니다 · 예담헌 한옥 돌잔치" />
-<meta name="twitter:description" content="2026년 9월 20일 일요일 · 예담헌 본점(초담)" />
+<meta name="twitter:title" content="유찬이 첫 생일에 초대합니다" />
+<meta name="twitter:description" content="유찬이의 첫 생일에 소중한 분들을 초대해요 🐣" />
 <meta name="twitter:image" content="https://uchanlee.netlify.app/assets/studio3.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -186,6 +186,13 @@
     background:linear-gradient(180deg,#F3E7CE,#EEDFC2);border:1px solid var(--gold);
     border-radius:16px;font-size:13.5px;line-height:1.85;color:var(--meok);
     font-family:'Gowun Batang',serif;box-shadow:0 4px 16px rgba(160,120,60,.15)}
+  .lockgate{text-align:center;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .lg-lead{font-size:14.5px;color:var(--meok);line-height:1.85;margin:0 0 20px;font-family:'Gowun Batang',serif}
+  .lg-form{max-width:280px;margin:0 auto;display:flex;gap:8px}
+  .lg-form input{flex:1;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--hanji);
+    font-family:inherit;font-size:15px;color:var(--meok);text-align:center;letter-spacing:.2em;box-sizing:border-box}
+  .lg-form button{padding:12px 20px;border:none;border-radius:10px;background:var(--jjok);color:#F4ECD9;font-size:14.5px;font-weight:700;cursor:pointer}
+  .lg-hint{font-size:12.5px;color:var(--dahong);margin:12px 0 0;min-height:16px}
   .guestbook{text-align:center}
   .gb-lead{color:var(--muted);font-size:13.5px;margin:2px 0 16px}
   .gb-form{max-width:330px;margin:0 auto 22px;display:flex;flex-direction:column;gap:9px}
@@ -345,6 +352,16 @@ function render(){
       <div class="signature reveal">${parentsLine()}<br><b>${CONFIG.babyName}</b> 올림</div>
     </section>
 
+    <section class="lockgate reveal" id="lockGate">${plum()}
+      <div class="sec-title reveal">초대</div><div class="sec-head reveal">일시 · 장소 안내</div>
+      <p class="lg-lead">소중한 분들만 모시는 자리라,<br>일시와 장소는 <b>초대받으신 분께만</b> 보여드려요 🤍</p>
+      <div class="lg-form">
+        <input id="lgPw" inputmode="numeric" placeholder="초대 암호" maxlength="8" autocomplete="off" />
+        <button id="lgBtn" type="button">확인</button>
+      </div>
+      <p class="lg-hint" id="lgHint"></p>
+    </section>
+    <div id="secretZone" style="display:none">
     <section class="info">${plum()}
       <div class="sec-title reveal">일시</div><div class="sec-head reveal">모시는 날</div>
       <div class="big-date reveal myeong">${CONFIG.dateText}</div>
@@ -362,6 +379,7 @@ function render(){
       <div class="btns reveal"><a class="btn pri" href="${naver}" target="_blank">네이버 지도</a><a class="btn" href="${kakao}" target="_blank">카카오맵</a></div>
       <div class="way reveal"><b>주차</b> · 주차가 어려우니 가급적 대중교통을 이용해 주세요.<br><b>지하철</b> · 3호선 안국역에서 도보 이동</div>
     </section>
+    </div>
 
     <section class="growth">${plum()}
       <div class="sec-title reveal">기록</div><div class="sec-head reveal">유찬이의 첫 해</div>
@@ -454,6 +472,19 @@ function render(){
         btn.disabled=false;btn.textContent=o;load();
       }).catch(function(){btn.disabled=false;btn.textContent=o;alert("잠시 후 다시 시도해 주세요 😢");});
     });load();}
+  })();
+
+  // 일시·장소 암호 게이트 (초대받은 분만)
+  (function(){
+    var gate=document.getElementById("lockGate"),zone=document.getElementById("secretZone");
+    if(!gate||!zone)return;
+    function unlock(){zone.style.display="";gate.style.display="none";try{sessionStorage.setItem("yc_ok","1");}catch(e){}
+      document.querySelectorAll("#secretZone .reveal").forEach(function(el){el.classList.add("show");});}
+    try{if(sessionStorage.getItem("yc_ok")){unlock();return;}}catch(e){}
+    var pw=document.getElementById("lgPw"),btn=document.getElementById("lgBtn"),hint=document.getElementById("lgHint");
+    function tryPw(){if((pw.value||"").trim()==="1009"){unlock();}else{hint.textContent="암호가 맞지 않아요. 초대장을 보내주신 분께 확인해 주세요 🥺";pw.value="";}}
+    btn.addEventListener("click",tryPw);
+    pw.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();tryPw();}});
   })();
 
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")}),{threshold:.14});

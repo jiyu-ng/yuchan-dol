@@ -329,6 +329,7 @@ function render(){
       ${calendarHTML()}
       <div class="time reveal">${CONFIG.endText}</div>
       <div class="dday reveal" id="dday"></div>
+      <div class="rsvp-note reveal">🤍 작고 조용한 자리로 준비한 만큼,<br>미리 말씀 나눈 가까운 분들과 함께합니다.<br>따뜻한 마음만으로도 충분히 감사합니다.</div>
     </section>
 
     <section class="place">${plum()}
@@ -353,9 +354,6 @@ function render(){
 
     ${accountsSection}
 
-    <section class="closing-note">${plum()}
-      <div class="rsvp-note reveal">🤍 작고 조용한 자리로 준비한 만큼,<br>미리 말씀 나눈 가까운 분들과 함께합니다.<br>따뜻한 마음만으로도 충분히 감사합니다.</div>
-    </section>
 
     <footer>
       ${eaves().replace('class="eaves"','class="eaves f-eaves"')}

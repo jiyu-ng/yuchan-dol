@@ -116,15 +116,28 @@
     border:1px solid var(--line)}
   .grid .cell img{width:100%;height:100%;object-fit:cover}
   .growth{text-align:center}
-  .growth-lead{color:var(--muted);font-size:14px;line-height:1.75;margin:2px 0 26px}
-  .timeline{display:flex;flex-direction:column;gap:26px;max-width:330px;margin:0 auto}
-  .tl-item{margin:0}
-  .tl-photo{border-radius:16px;overflow:hidden;background:#EBDFC6;border:3px solid #fff;
-    box-shadow:0 6px 22px rgba(42,36,31,.15)}
-  .tl-photo img{display:block;width:100%;height:auto}
-  .tl-cap{margin-top:10px;display:flex;flex-direction:column;gap:2px}
-  .tl-label{font-size:16.5px;font-weight:700;color:var(--ink);letter-spacing:.01em}
-  .tl-date{font-size:12px;color:var(--muted);letter-spacing:.03em}
+  .growth-lead{color:var(--muted);font-size:14px;line-height:1.75;margin:2px 0 14px}
+  .swipe-hint{color:var(--muted);font-size:11.5px;letter-spacing:.06em;margin:0 0 12px}
+  .timeline{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x mandatory;
+    padding:2px 18px 10px;-webkit-overflow-scrolling:touch}
+  .timeline::-webkit-scrollbar{display:none}
+  .tl-item{position:relative;flex:0 0 74%;scroll-snap-align:center;margin:0;cursor:pointer;
+    border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#EBDFC6;box-shadow:0 6px 20px rgba(42,36,31,.15)}
+  .tl-item img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 26%}
+  .tl-cap{position:absolute;left:0;right:0;bottom:0;padding:24px 14px 12px;text-align:left;
+    background:linear-gradient(transparent,rgba(42,36,31,.74))}
+  .tl-label{display:block;font-size:15px;font-weight:700;color:#FAF4E6;text-shadow:0 1px 6px rgba(0,0,0,.5);line-height:1.3}
+  .tl-date{font-size:11px;color:#EAD9B8;letter-spacing:.02em}
+  .lb{position:fixed;inset:0;z-index:200;background:rgba(22,17,13,.95);display:none}
+  .lb.on{display:block}
+  .lb-track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .lb-track::-webkit-scrollbar{display:none}
+  .lb-slide{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:24px 16px}
+  .lb-slide img{max-width:100%;max-height:76vh;object-fit:contain;border-radius:10px}
+  .lb-cap{color:#FAF4E6;margin-top:16px;font-size:16px;font-weight:700;text-align:center}
+  .lb-close{position:fixed;top:12px;right:16px;z-index:210;width:40px;height:40px;border:none;
+    background:rgba(0,0,0,.4);color:#fff;font-size:23px;border-radius:50%;cursor:pointer;line-height:1}
 
   /* ===== HEART ===== */
   .heart{text-align:center;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -200,7 +213,7 @@ const CONFIG = {
     {s:"assets/growth/d0114-passport.jpg",l:"여권사진 📕"},
     {s:"assets/growth/d0124.jpg",l:"만 4개월"},
     {s:"assets/growth/d0204.jpg",l:"2.4"},
-    {s:"assets/growth/d0211-anniv.jpg",l:"2.11"},
+    {s:"assets/growth/d0211-anniv.jpg",l:"결혼기념일 💕"},
     {s:"assets/growth/d0221.jpg",l:"만 5개월"},
     {s:"assets/growth/d0227-okinawa.jpg",l:"첫 해외여행 ✈️"},
     {s:"assets/growth/d0228-aquarium.jpg",l:"첫 수족관 🐠"},
@@ -278,8 +291,10 @@ function render(){
   const gallery=(CONFIG.gallery.length?CONFIG.gallery:Array(6).fill(null))
     .map(s=>s?'<div class="cell"><img src="'+s+'"></div>':'<div class="cell ph">사진</div>').join("");
   const growthHtml=(CONFIG.growth||[])
-    .map(g=>'<figure class="tl-item reveal"><div class="tl-photo"><img src="'+g.s+'" alt="유찬이 '+g.l+'" loading="lazy"></div>'
+    .map((g,i)=>'<figure class="tl-item reveal" onclick="openLB('+i+')"><img src="'+g.s+'" alt="유찬이 '+g.l+'" loading="lazy">'
       +'<figcaption class="tl-cap"><span class="tl-label myeong">'+g.l+'</span>'+(g.d?'<span class="tl-date">'+g.d+'</span>':'')+'</figcaption></figure>').join("");
+  const lbTrack=(CONFIG.growth||[])
+    .map(g=>'<div class="lb-slide"><img src="'+g.s+'" alt="유찬이 '+g.l+'"><div class="lb-cap myeong">'+g.l+(g.d?' · '+g.d:'')+'</div></div>').join("");
   const naver=CONFIG.naverMapUrl||("https://map.naver.com/v5/search/"+encodeURIComponent(CONFIG.naverMapQuery));
   const kakao=CONFIG.kakaoMapUrl||("https://map.kakao.com/?q="+encodeURIComponent(CONFIG.address));
   const accountsSection=CONFIG.kakaopay?`
@@ -320,12 +335,13 @@ function render(){
       <div class="venue reveal myeong">${CONFIG.venue}</div>
       <div class="addr reveal">${CONFIG.address}</div>
       <div class="btns reveal"><a class="btn pri" href="${naver}" target="_blank">네이버 지도</a><a class="btn" href="${kakao}" target="_blank">카카오맵</a></div>
-      <div class="way reveal"><b>주차</b> · 예담헌 본점 주차 안내 (확인 후 업데이트)<br><b>지하철</b> · 3호선 안국역에서 도보 이동</div>
+      <div class="way reveal"><b>주차</b> · 주차가 어려우니 가급적 대중교통을 이용해 주세요.<br><b>지하철</b> · 3호선 안국역에서 도보 이동</div>
     </section>
 
     <section class="growth">${plum()}
       <div class="sec-title reveal">기록</div><div class="sec-head reveal">유찬이의 첫 해</div>
       <p class="growth-lead reveal">세상에 온 날부터 첫 생일까지,<br>유찬이가 자라온 시간이에요 🌱</p>
+      <p class="swipe-hint reveal">← 옆으로 밀어서 · 사진을 누르면 크게 볼 수 있어요</p>
       <div class="timeline">${growthHtml}</div>
     </section>
 
@@ -361,9 +377,15 @@ function render(){
     <footer>
       ${eaves().replace('class="eaves"','class="eaves f-eaves"')}
       <div class="f-thanks myeong">유찬이의 첫 생일을<br>함께해 주셔서 감사합니다</div>
-    </footer>`;
+    </footer>
+    <div class="lb" id="lb" onclick="if(event.target.id==='lb')closeLB()">
+      <button class="lb-close" onclick="closeLB()" aria-label="닫기">✕</button>
+      <div class="lb-track" id="lbTrack">${lbTrack}</div>
+    </div>`;
 
   document.getElementById("dday").textContent=ddayText(CONFIG.eventDate);
+  window.openLB=function(i){var lb=document.getElementById("lb"),t=document.getElementById("lbTrack");lb.classList.add("on");document.body.style.overflow="hidden";var s=t.children[i];if(s)t.scrollLeft=s.offsetLeft;};
+  window.closeLB=function(){document.getElementById("lb").classList.remove("on");document.body.style.overflow="";};
 
   // RSVP interactions (제출 저장은 다음 단계에서 DB 연결)
   let attend="참석";

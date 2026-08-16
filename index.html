@@ -169,6 +169,8 @@ const CONFIG = {
   venue:"예담헌 본점 (초담)",
   address:"서울 종로구 북촌로 77",
   naverMapQuery:"예담헌 북촌로77",
+  naverMapUrl:"https://naver.me/xmxdXO6m",
+  kakaoMapUrl:"https://place.map.kakao.com/1343675747",
   coverPhoto:"assets/studio3.jpg",
   gallery:["assets/studio1.jpg","assets/studio2.jpg","assets/studio4.jpg","assets/studio5.jpg","assets/studio6.jpg","assets/studio7.jpg","assets/studio8.jpg","assets/studio9.jpg","assets/studio10.jpg"],
   kakaopay:"https://qr.kakaopay.com/Ej7lqBFVP",  // 카카오페이 송금 링크 (계좌번호 미노출)
@@ -227,8 +229,8 @@ function render(){
   const photo=CONFIG.coverPhoto?'<img src="'+CONFIG.coverPhoto+'" alt="유찬">':'<span class="ph">아기 사진<br>넣을 자리</span>';
   const gallery=(CONFIG.gallery.length?CONFIG.gallery:Array(6).fill(null))
     .map(s=>s?'<div class="cell"><img src="'+s+'"></div>':'<div class="cell ph">사진</div>').join("");
-  const naver="https://map.naver.com/v5/search/"+encodeURIComponent(CONFIG.naverMapQuery);
-  const kakao="https://map.kakao.com/?q="+encodeURIComponent(CONFIG.address);
+  const naver=CONFIG.naverMapUrl||("https://map.naver.com/v5/search/"+encodeURIComponent(CONFIG.naverMapQuery));
+  const kakao=CONFIG.kakaoMapUrl||("https://map.kakao.com/?q="+encodeURIComponent(CONFIG.address));
   const accountsSection=CONFIG.kakaopay?`
     <section class="heart">${plum()}
       <div class="sec-title reveal">마음</div><div class="sec-head reveal">마음 전하실 곳</div>

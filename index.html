@@ -115,6 +115,16 @@
     display:flex;align-items:center;justify-content:center;color:var(--meok2);font-size:11px;overflow:hidden;
     border:1px solid var(--line)}
   .grid .cell img{width:100%;height:100%;object-fit:cover}
+  .growth{text-align:center}
+  .growth-lead{color:var(--muted);font-size:14px;line-height:1.75;margin:2px 0 26px}
+  .timeline{display:flex;flex-direction:column;gap:26px;max-width:330px;margin:0 auto}
+  .tl-item{margin:0}
+  .tl-photo{border-radius:16px;overflow:hidden;background:#EBDFC6;border:3px solid #fff;
+    box-shadow:0 6px 22px rgba(42,36,31,.15)}
+  .tl-photo img{display:block;width:100%;height:auto}
+  .tl-cap{margin-top:10px;display:flex;flex-direction:column;gap:2px}
+  .tl-label{font-size:16.5px;font-weight:700;color:var(--ink);letter-spacing:.01em}
+  .tl-date{font-size:12px;color:var(--muted);letter-spacing:.03em}
 
   /* ===== HEART ===== */
   .heart{text-align:center;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -173,6 +183,35 @@ const CONFIG = {
   kakaoMapUrl:"https://place.map.kakao.com/1343675747",
   coverPhoto:"assets/studio3.jpg",
   gallery:["assets/studio1.jpg","assets/studio2.jpg","assets/studio4.jpg","assets/studio5.jpg","assets/studio6.jpg","assets/studio7.jpg","assets/studio8.jpg","assets/studio9.jpg","assets/studio10.jpg"],
+  growth:[
+    {s:"assets/growth/m00-newborn.jpg",l:"세상에 온 날",d:"2025.9.20"},
+    {s:"assets/growth/m01.jpg",l:"만 1개월"},
+    {s:"assets/growth/50day.jpg",l:"50일"},
+    {s:"assets/growth/m02.jpg",l:"만 2개월"},
+    {s:"assets/growth/m02b.jpg",l:"만 2개월"},
+    {s:"assets/growth/m02c-1201.jpg",l:"12.1"},
+    {s:"assets/growth/d1207.jpg",l:"12.7"},
+    {s:"assets/growth/d1211.jpg",l:"12.11"},
+    {s:"assets/growth/d100.jpg",l:"100일 🎉"},
+    {s:"assets/growth/d100b.jpg",l:"100일 🎉"},
+    {s:"assets/growth/d0113.jpg",l:"만 3개월"},
+    {s:"assets/growth/d0114-passport.jpg",l:"여권사진 📕"},
+    {s:"assets/growth/d0124.jpg",l:"만 4개월"},
+    {s:"assets/growth/d0204.jpg",l:"2.4"},
+    {s:"assets/growth/d0211-anniv.jpg",l:"2.11"},
+    {s:"assets/growth/d0221.jpg",l:"만 5개월"},
+    {s:"assets/growth/d0227-okinawa.jpg",l:"첫 해외여행 ✈️"},
+    {s:"assets/growth/d0228-aquarium.jpg",l:"첫 수족관 🐠"},
+    {s:"assets/growth/d0404-cherry.jpg",l:"첫 벚꽃 🌸"},
+    {s:"assets/growth/d0428.jpg",l:"만 7개월"},
+    {s:"assets/growth/d0507.jpg",l:"5.7"},
+    {s:"assets/growth/d0509.jpg",l:"5.9"},
+    {s:"assets/growth/d0513.jpg",l:"5.13"},
+    {s:"assets/growth/d0516.jpg",l:"5.16"},
+    {s:"assets/growth/d0531.jpg",l:"만 8개월"},
+    {s:"assets/growth/d0602.jpg",l:"6.2"},
+    {s:"assets/growth/d0610.jpg",l:"6.10"},
+  ],
   kakaopay:"https://qr.kakaopay.com/Ej7lqBFVP",  // 카카오페이 송금 링크 (계좌번호 미노출)
   greeting:[
     "여기 작은 사람이 태어나\n벌써 첫 번째 봄과 여름을 지나\n첫 생일을 맞이했습니다.",
@@ -229,6 +268,9 @@ function render(){
   const photo=CONFIG.coverPhoto?'<img src="'+CONFIG.coverPhoto+'" alt="유찬">':'<span class="ph">아기 사진<br>넣을 자리</span>';
   const gallery=(CONFIG.gallery.length?CONFIG.gallery:Array(6).fill(null))
     .map(s=>s?'<div class="cell"><img src="'+s+'"></div>':'<div class="cell ph">사진</div>').join("");
+  const growthHtml=(CONFIG.growth||[])
+    .map(g=>'<figure class="tl-item reveal"><div class="tl-photo"><img src="'+g.s+'" alt="유찬이 '+g.l+'" loading="lazy"></div>'
+      +'<figcaption class="tl-cap"><span class="tl-label myeong">'+g.l+'</span>'+(g.d?'<span class="tl-date">'+g.d+'</span>':'')+'</figcaption></figure>').join("");
   const naver=CONFIG.naverMapUrl||("https://map.naver.com/v5/search/"+encodeURIComponent(CONFIG.naverMapQuery));
   const kakao=CONFIG.kakaoMapUrl||("https://map.kakao.com/?q="+encodeURIComponent(CONFIG.address));
   const accountsSection=CONFIG.kakaopay?`
@@ -272,8 +314,14 @@ function render(){
       <div class="way reveal"><b>주차</b> · 예담헌 본점 주차 안내 (확인 후 업데이트)<br><b>지하철</b> · 3호선 안국역에서 도보 이동</div>
     </section>
 
+    <section class="growth">${plum()}
+      <div class="sec-title reveal">기록</div><div class="sec-head reveal">유찬이의 첫 해</div>
+      <p class="growth-lead reveal">세상에 온 날부터 첫 생일까지,<br>유찬이가 자라온 시간이에요 🌱</p>
+      <div class="timeline">${growthHtml}</div>
+    </section>
+
     <section class="gallery">${plum()}
-      <div class="sec-title reveal">순간</div><div class="sec-head reveal">유찬이의 첫 해</div>
+      <div class="sec-title reveal">화보</div><div class="sec-head reveal">첫 생일 화보</div>
       <div class="grid reveal">${gallery}</div>
     </section>
 

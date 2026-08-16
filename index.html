@@ -141,6 +141,8 @@
   .lb-nav{position:fixed;top:50%;transform:translateY(-50%);z-index:210;width:44px;height:44px;border:none;
     background:rgba(0,0,0,.32);color:#fff;font-size:28px;border-radius:50%;cursor:pointer;line-height:1}
   .lb-prev{left:12px}.lb-next{right:12px}
+  .bgm-btn{position:fixed;right:16px;bottom:16px;z-index:150;width:44px;height:44px;border:none;border-radius:50%;
+    background:rgba(42,36,31,.55);color:#fff;font-size:19px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.28);line-height:1}
 
   /* ===== HEART ===== */
   .heart{text-align:center;background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -200,6 +202,7 @@ const CONFIG = {
   naverMapUrl:"https://naver.me/xmxdXO6m",
   kakaoMapUrl:"https://place.map.kakao.com/1343675747",
   coverPhoto:"assets/studio3.jpg",
+  bgm:"assets/bgm.mp3",
   gallery:["assets/studio1.jpg","assets/studio2.jpg","assets/studio4.jpg","assets/studio5.jpg","assets/studio6.jpg","assets/studio7.jpg","assets/studio8.jpg","assets/studio9.jpg","assets/studio10.jpg"],
   growth:[
     {s:"assets/growth/m00-newborn.jpg",l:"세상에 온 날",d:"2025.9.20"},
@@ -364,9 +367,18 @@ function render(){
       <button class="lb-nav lb-prev" onclick="lbNav(-1)" aria-label="이전 사진">‹</button>
       <button class="lb-nav lb-next" onclick="lbNav(1)" aria-label="다음 사진">›</button>
       <div class="lb-track" id="lbTrack"></div>
-    </div>`;
+    </div>
+    ${CONFIG.bgm?'<audio id="bgm" src="'+CONFIG.bgm+'" loop preload="auto"></audio><button id="bgmBtn" class="bgm-btn" onclick="toggleBgm(event)" aria-label="배경음악 재생/정지">🔊</button>':''}`;
 
   document.getElementById("dday").textContent=ddayText(CONFIG.eventDate);
+  (function(){var bgm=document.getElementById("bgm");if(!bgm)return;var userPaused=false;
+    function setBtn(){var b=document.getElementById("bgmBtn");if(b)b.textContent=bgm.paused?"🔇":"🔊";}
+    bgm.addEventListener("play",setBtn);bgm.addEventListener("pause",setBtn);bgm.volume=0.6;
+    window.toggleBgm=function(ev){if(ev)ev.stopPropagation();if(bgm.paused){userPaused=false;bgm.play().catch(function(){});}else{userPaused=true;bgm.pause();}};
+    bgm.play().catch(function(){});
+    var kick=function(){if(!userPaused&&bgm.paused)bgm.play().catch(function(){});document.removeEventListener("pointerdown",kick);document.removeEventListener("scroll",kick);};
+    document.addEventListener("pointerdown",kick,{passive:true});document.addEventListener("scroll",kick,{passive:true});
+  })();
   var LB_SETS={
     growth:(CONFIG.growth||[]).map(function(g){return {src:g.s,cap:g.l+(g.d?" · "+g.d:"")};}),
     studio:(CONFIG.gallery||[]).map(function(s){return {src:s,cap:"첫 생일 화보"};})

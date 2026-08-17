@@ -219,15 +219,8 @@
 const CONFIG = {
   babyName:"유찬", babyNameEn:"YUCHAN",
   parents:{ dad:"이현욱", mom:"김지유" },
-  eventDate:"2026-09-20",
-  dateText:"2026년 9월 20일 일요일",
-  arriveTime:"오후 4시",
-  endText:"오후 7시 종료",
-  venue:"예담헌 본점 (초담)",
-  address:"서울 종로구 북촌로 77",
-  naverMapQuery:"예담헌 북촌로77",
-  naverMapUrl:"https://naver.me/xmxdXO6m",
-  kakaoMapUrl:"https://place.map.kakao.com/1343675747",
+  // 일시·장소는 암호(1009)로 AES-GCM 암호화 — 초대자만 복호화해 열람(소스에 평문 없음)
+  secret:{s:"VAhSklZJdRKB26hyKJdomA==",i:"aRfE3Js4e2JJCHa0",c:"TaJZL+Ond3IWiPnXeYICegVY8mn72ATlZS9Ge302mXCCh8PXpVEPji+GNPTgzuHhemOHEaIp5Wf/M0ajLKUCsQgBg01H7BARUnmGo7uK2Vh6OWrRWCWkG3rEl5Rftl3dzG63VZmvk+vJKLkuAxci6QsPI0NpDIAYAy8uukNn+bYnXbFsoY7PjVGkf0wd4jDxHFKD15q8Ru9lT1WxQWXkvN+y6FoqFck/+AdjsqBMOoVVf1o+WSc9c3Eggo1eGt3zgiHQWAhko58temkGPIC5L/L4F1mU/lghKogcyGn4nsyYELovq6PSQRhy5EveaM07wzqkUBXLLDnDO0UA7CY+VhmPZflrjDGPz8PABhYzNyJS8sseWC8qfAmnDJgLyBJRP/hdXMMDiV++tOWoJ2DAPwrG6R41R3FsIHIxLEg="},
   coverPhoto:"assets/studio3.jpg",
   bgm:"assets/bgm.mp3",
   gallery:["assets/studio1.jpg","assets/studio4.jpg","assets/studio5.jpg","assets/studio6.jpg","assets/studio9.jpg","assets/studio2.jpg","assets/studio7.jpg","assets/studio8.jpg","assets/studio10.jpg"],
@@ -308,15 +301,39 @@ function plum(){return `<svg class="plum" width="30" height="30" viewBox="0 0 30
     return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4.6" fill="#AE382C" opacity=".82"/>`;}).join("")}
   <circle cx="15" cy="15" r="3" fill="#B8912F"/></svg>`;}
 
-function calendarHTML(){
-  const first=2,days=30,mark=20;let cells=[];for(let i=0;i<first;i++)cells.push("");
+function calendarHTML(eventDate){
+  const dt=new Date(eventDate+"T00:00:00");
+  const y=dt.getFullYear(),m=dt.getMonth(),mark=dt.getDate();
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const hanja=["一","二","三","四","五","六","七","八","九","十","十一","十二"][m];
+  let cells=[];for(let i=0;i<first;i++)cells.push("");
   for(let d=1;d<=days;d++)cells.push(d);let rows="",row="";
   cells.forEach((d,i)=>{const dow=i%7;
     if(d==="")row+="<td></td>";else if(d===mark)row+='<td class="mark'+(dow===0?' sun':'')+'"><span>'+d+'</span></td>';
     else row+='<td'+(dow===0?' class="sun"':'')+'>'+d+'</td>';
     if(dow===6){rows+="<tr>"+row+"</tr>";row="";}});
   if(row)rows+="<tr>"+row+"</tr>";
-  return '<div class="cal reveal"><div class="cal-h">2026 · 九月</div><table><tr><th class="sun">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>'+rows+'</table></div>';
+  return '<div class="cal reveal show"><div class="cal-h">'+y+' · '+hanja+'月</div><table><tr><th class="sun">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>'+rows+'</table></div>';
+}
+// 복호화된 일시·장소 데이터로 info+place 섹션 HTML 생성 (암호 해제 후 주입)
+function buildSecret(d){
+  return '<section class="info">'+plum()
+    +'<div class="sec-title reveal show">일시</div><div class="sec-head reveal show">모시는 날</div>'
+    +'<div class="big-date reveal show myeong">'+d.dateText+'</div>'
+    +'<div class="big-sub reveal show">'+d.arriveTime+'</div>'
+    +'<div class="dday reveal show" id="dday"></div>'
+    +calendarHTML(d.eventDate)
+    +'<div class="time reveal show">'+d.endText+'</div>'
+    +'<div class="rsvp-note reveal show">🤍 작고 조용한 자리로 준비한 만큼,<br>미리 말씀 나눈 가까운 분들과 함께합니다.<br>따뜻한 마음만으로도 충분히 감사합니다.</div>'
+    +'</section>'
+    +'<section class="place">'+plum()
+    +'<div class="sec-title reveal show">장소</div><div class="sec-head reveal show">오시는 길</div>'
+    +'<div class="venue reveal show myeong">'+d.venue+'</div>'
+    +'<div class="addr reveal show">'+d.address+'</div>'
+    +'<div class="btns reveal show"><a class="btn pri" href="'+d.naverMapUrl+'" target="_blank" rel="noopener">네이버 지도</a><a class="btn" href="'+d.kakaoMapUrl+'" target="_blank" rel="noopener">카카오맵</a></div>'
+    +'<div class="way reveal show"><b>주차</b> · 주차가 어려우니 가급적 대중교통을 이용해 주세요.<br><b>지하철</b> · 3호선 안국역에서 도보 이동</div>'
+    +'</section>';
 }
 
 function render(){
@@ -326,8 +343,6 @@ function render(){
   const growthHtml=(CONFIG.growth||[])
     .map((g,i)=>'<figure class="tl-item reveal" onclick="openLB(\'growth\','+i+')"><img src="'+g.s+'" alt="유찬이 '+g.l+'" loading="lazy">'
       +'<figcaption class="tl-cap"><span class="tl-label myeong">'+g.l+'</span>'+(g.d?'<span class="tl-date">'+g.d+'</span>':'')+'</figcaption></figure>').join("");
-  const naver=CONFIG.naverMapUrl||("https://map.naver.com/v5/search/"+encodeURIComponent(CONFIG.naverMapQuery));
-  const kakao=CONFIG.kakaoMapUrl||("https://map.kakao.com/?q="+encodeURIComponent(CONFIG.address));
   const accountsSection=CONFIG.kakaopay?`
     <section class="heart">${plum()}
       <div class="sec-title reveal">마음</div><div class="sec-head reveal">마음 전하실 곳</div>
@@ -361,25 +376,7 @@ function render(){
       </div>
       <p class="lg-hint" id="lgHint"></p>
     </section>
-    <div id="secretZone" style="display:none">
-    <section class="info">${plum()}
-      <div class="sec-title reveal">일시</div><div class="sec-head reveal">모시는 날</div>
-      <div class="big-date reveal myeong">${CONFIG.dateText}</div>
-      <div class="big-sub reveal">${CONFIG.arriveTime}</div>
-      <div class="dday reveal" id="dday"></div>
-      ${calendarHTML()}
-      <div class="time reveal">${CONFIG.endText}</div>
-      <div class="rsvp-note reveal">🤍 작고 조용한 자리로 준비한 만큼,<br>미리 말씀 나눈 가까운 분들과 함께합니다.<br>따뜻한 마음만으로도 충분히 감사합니다.</div>
-    </section>
-
-    <section class="place">${plum()}
-      <div class="sec-title reveal">장소</div><div class="sec-head reveal">오시는 길</div>
-      <div class="venue reveal myeong">${CONFIG.venue}</div>
-      <div class="addr reveal">${CONFIG.address}</div>
-      <div class="btns reveal"><a class="btn pri" href="${naver}" target="_blank">네이버 지도</a><a class="btn" href="${kakao}" target="_blank">카카오맵</a></div>
-      <div class="way reveal"><b>주차</b> · 주차가 어려우니 가급적 대중교통을 이용해 주세요.<br><b>지하철</b> · 3호선 안국역에서 도보 이동</div>
-    </section>
-    </div>
+    <div id="secretZone" style="display:none"></div>
 
     <section class="growth">${plum()}
       <div class="sec-title reveal">기록</div><div class="sec-head reveal">유찬이의 첫 해</div>
@@ -418,7 +415,6 @@ function render(){
     </div>
     ${CONFIG.bgm?'<audio id="bgm" src="'+CONFIG.bgm+'" loop preload="auto"></audio><button id="bgmBtn" class="bgm-btn" onclick="toggleBgm(event)" aria-label="배경음악 재생/정지">🔊</button>':''}`;
 
-  document.getElementById("dday").textContent=ddayText(CONFIG.eventDate);
   (function(){var bgm=document.getElementById("bgm");if(!bgm)return;var userPaused=false;
     function setBtn(){var b=document.getElementById("bgmBtn");if(b)b.textContent=bgm.paused?"🔇":"🔊";}
     bgm.addEventListener("play",setBtn);bgm.addEventListener("pause",setBtn);bgm.volume=0.6;
@@ -474,15 +470,25 @@ function render(){
     });load();}
   })();
 
-  // 일시·장소 암호 게이트 (초대받은 분만)
+  // 일시·장소 암호 게이트 (AES-GCM 복호화 — 초대받은 분만, 소스에 평문 없음)
   (function(){
     var gate=document.getElementById("lockGate"),zone=document.getElementById("secretZone");
     if(!gate||!zone)return;
-    function unlock(){zone.style.display="";gate.style.display="none";try{sessionStorage.setItem("yc_ok","1");}catch(e){}
-      document.querySelectorAll("#secretZone .reveal").forEach(function(el){el.classList.add("show");});}
-    try{if(sessionStorage.getItem("yc_ok")){unlock();return;}}catch(e){}
+    function b64d(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});}
+    async function decrypt(pw){
+      var sec=CONFIG.secret,e=new TextEncoder();
+      var km=await crypto.subtle.importKey("raw",e.encode(pw),"PBKDF2",false,["deriveKey"]);
+      var key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64d(sec.s),iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+      var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64d(sec.i)},key,b64d(sec.c));
+      return JSON.parse(new TextDecoder().decode(pt));
+    }
+    function reveal(d){zone.innerHTML=buildSecret(d);zone.style.display="";gate.style.display="none";
+      var dd=document.getElementById("dday");if(dd)dd.textContent=ddayText(d.eventDate);}
+    try{var c=sessionStorage.getItem("yc_secret");if(c){reveal(JSON.parse(c));return;}}catch(e){}
     var pw=document.getElementById("lgPw"),btn=document.getElementById("lgBtn"),hint=document.getElementById("lgHint");
-    function tryPw(){if((pw.value||"").trim()==="1009"){unlock();}else{hint.textContent="암호가 맞지 않아요. 초대장을 보내주신 분께 확인해 주세요 🥺";pw.value="";}}
+    async function tryPw(){var v=(pw.value||"").trim();if(!v)return;btn.disabled=true;hint.textContent="";
+      try{var d=await decrypt(v);try{sessionStorage.setItem("yc_secret",JSON.stringify(d));}catch(e){}reveal(d);}
+      catch(err){hint.textContent="암호가 맞지 않아요. 초대장을 보내주신 분께 확인해 주세요 🥺";pw.value="";btn.disabled=false;}}
     btn.addEventListener("click",tryPw);
     pw.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();tryPw();}});
   })();
